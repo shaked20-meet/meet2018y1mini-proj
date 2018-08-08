@@ -16,7 +16,7 @@ SIZE_Y=500
 turtle.setup(SIZE_X, SIZE_Y) #Curious? It's the turtle window  
                              #size. 
 turtle.penup()
-
+food = turtle.clone ()
 SQUARE_SIZE = 20
 START_LENGTH = 8
 
@@ -121,6 +121,34 @@ turtle.onkeypress(right, RIGHT_ARROW)
 #
 turtle.listen()
 #
+def make_food():
+    
+    #The screen positions go from -SIZE/2 to +SIZE/2
+    #But we need to make food pieces only appear on game squares
+    #So we cut up the game board into multiples of SQUARE_SIZE.
+    min_x=-int(SIZE_X/2/SQUARE_SIZE)+1
+    max_x=int(SIZE_X/2/SQUARE_SIZE)-1
+    min_y=-int(SIZE_Y/2/SQUARE_SIZE)-1
+    max_y=int(SIZE_Y/2/SQUARE_SIZE)+1
+    
+    #Pick a position that is a random multiple of SQUARE_SIZE
+    food_x = random.randint(min_x,max_x)*SQUARE_SIZE
+    food_y = random.randint(min_y,max_y)*SQUARE_SIZE
+    food.goto(food_x, food_y)
+    my_pos = food_x, food_y
+    pos_list.append(my_pos)
+
+    
+    
+    
+    
+        ##1.WRITE YOUR CODE HERE: Make the food turtle go to the randomly-generated
+        ##                        position 
+        ##2.WRITE YOUR CODE HERE: Add the food turtle's position to the food positions list
+        ##3.WRITE YOUR CODE HERE: Add the food turtle's stamp to the food stamps list
+
+
+
 def move_snake():
     my_pos = snake.pos()
     x_pos = my_pos[0]
@@ -141,7 +169,6 @@ def move_snake():
     new_pos = snake.pos()
     new_x_pos = new_pos[0]
     new_y_pos = new_pos[1]
-    turtle.ontimer(move_snake, TIME_STEP)
 
 
     
@@ -151,11 +178,34 @@ def move_snake():
 #
 #    #Stamp new element and append new stamp in list
 #    #Remember: The snake position changed - update my_pos()
+
     my_pos=snake.pos() 
     pos_list.append(my_pos)
     new_stamp = snake.stamp()
     stamp_list.append(new_stamp)
 #    ######## SPECIAL PLACE - Remember it for Part 5
+    global food_stamps, food_pos
+    #If snake is on top of food item
+    if snake.pos() in food_pos:
+        food_ind=food_pos.index(snake.pos()) #What does this do?
+        food.clearstamp(food_stamps[food_ind]) #Remove eaten food                 
+                                               #stamp
+        food_pos.pop(food_ind) #Remove eaten food position
+        food_stamps.pop(food_ind) #Remove eaten food stamp
+        print("You have eaten the food!")
+    
+    #HINT: This if statement may be useful for Part 8
+
+    ...
+    #Don't change the rest of the code in move_snake() function:
+    #If you have included the timer so the snake moves 
+    #automatically, the function should finish as before with a 
+    #call to ontimer()
+
+
+
+
+
 #    #pop zeroth element in pos_list to get rid of last the last 
 #    #piece of the tail
     old_stamp = stamp_list.pop(0)
@@ -169,10 +219,10 @@ def move_snake():
 #
 ##Go to the top of your file, and after the line that says direction = UP,  write:
 #
-#UP_EDGE = 250
-#DOWN_EDGE = -250
-#RIGHT_EDGE = 400
-#LEFT_EDGE = -400
+    UP_EDGE = 250
+    DOWN_EDGE = -250
+    RIGHT_EDGE = 400
+    LEFT_EDGE = -400
 #
 #
 ##Now go add code to the end of your  move_snake() function
@@ -182,10 +232,10 @@ def move_snake():
 #    . . .
 #
 #    #Add new lines to the end of the function
-#    #Grab position of snake
-#    new_pos = snake.pos()
-#    new_x_pos = new_pos[0]
-#    new_y_pos = new_pos[1]
+   #Grab position of snake
+    new_pos = snake.pos()
+    new_x_pos = new_pos[0]
+    new_y_pos = new_pos[1]
 #
 ## The next three lines check if the snake is hitting the 
 ## right edge.
@@ -201,16 +251,24 @@ def move_snake():
     if new_y_pos <= DOWN_EDGE:
         print("You hit the bottom edge! Game over!")
         quit()
+
+    if len(food_stamps) <= 6:
+        make_food()
+        
+    turtle.ontimer(move_snake,TIME_STEP) #<--Last line of function
+
 move_snake()
+
+
+    
 #     # You should write code to check for the left, top, and bottom edges.
 #    #####WRITE YOUR CODE HERE
 
 
 turtle.register_shape("trash.gif")
+        
 
-food = turtle.clone ()
 food.shape("trash.gif")
-
 food_pos = [(100, 100), (-100, 100), (-100, -100), (100, -100)]
 food_stamps = []
 
